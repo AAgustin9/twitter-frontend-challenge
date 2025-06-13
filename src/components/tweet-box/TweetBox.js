@@ -20,12 +20,14 @@ const TweetBox = (props) => {
     const [images, setImages] = useState([]);
     const [imagesPreview, setImagesPreview] = useState([]);
 
-    const {length, query} = useSelector((state) => state.user);
+    const {feed, length, query} = useSelector((state) => state.user);
     const httpService = useHttpRequestService();
     const dispatch = useDispatch();
     const {t} = useTranslation();
     const service = useHttpRequestService()
     const [user, setUser] = useState()
+
+
 
 
     useEffect(() => {
@@ -39,14 +41,29 @@ const TweetBox = (props) => {
     const handleChange = (e) => {
         setContent(e.target.value);
     };
+
     const handleSubmit = async () => {
         try {
+            const newPost = await httpService.createPost({
+                content,
+                parentId,
+                images
+            });
+            
+            const currentUser = await handleGetUser();
+            const extendedPost = {
+                ...newPost,
+                author: currentUser,
+                reactions: [],
+                comments: []
+            };
+
+            dispatch(updateFeed([extendedPost, ...feed]));
+            dispatch(setLength(feed.length + 1));
+            
             setContent("");
             setImages([]);
             setImagesPreview([]);
-            dispatch(setLength(length + 1));
-            const posts = await httpService.getPosts(length + 1, "", query);
-            dispatch(updateFeed(posts));
             close && close();
         } catch (e) {
             console.log(e);
