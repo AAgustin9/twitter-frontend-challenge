@@ -28,8 +28,8 @@ const FollowUserBox = ({
   useEffect(() => {
     handleGetUser().then(r => {
       setUser(r)
-      setIsFollowing(r?.following.some((f: Author) => f.id === id))
-    })
+      setIsFollowing(r?.following?.some((f: Author) => f.id === id) ?? false);
+    });
   }, []);
 
   const handleGetUser = async () => {

@@ -99,9 +99,8 @@ const ProfilePage = () => {
         .then((res) => {
           setProfile(res);
           setFollowing(
-              res
-                  ? res?.followers.some((follower: User) => follower.id === user?.id)
-                  : false
+            res?.followers?.some((follower: User) => follower.id === user?.id) 
+            ?? false
           );
         })
         .catch(() => {

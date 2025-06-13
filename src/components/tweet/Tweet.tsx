@@ -34,7 +34,8 @@ const Tweet = ({post}: TweetProps) => {
   }
 
   const getCountByType = (type: string): number => {
-    return actualPost?.reactions?.filter((r) => r.type === type).length ?? 0;
+    const matches = actualPost.reactions?.filter(r => r.type === type);
+    return matches?.length ?? 0;
   };
 
   const handleReaction = async (type: string) => {
@@ -51,9 +52,9 @@ const Tweet = ({post}: TweetProps) => {
   };
 
   const hasReactedByType = (type: string): boolean => {
-    return actualPost.reactions.some(
-        (r) => r.type === type && r.userId === user?.id
-    );
+    return actualPost.reactions
+      ?.some( r => r.type === type && r.userId == user?.id)
+      ?? false;
   };
 
   return (
