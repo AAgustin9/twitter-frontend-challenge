@@ -10,6 +10,7 @@ import ProfilePage from "../../pages/profile/ProfilePage";
 import TweetPage from "../../pages/create-tweet-page/TweetPage";
 import CommentPage from "../../pages/create-comment-page/CommentPage";
 import PostPage from "../../pages/post-page/PostPage";
+import ProtectedRoute from "../common/ProtectedRoute";
 
 const WithNav = () => {
   return (
@@ -30,7 +31,11 @@ export const ROUTER = createBrowserRouter([
     element: <SignInPage />,
   },
   {
-    element: <WithNav />,
+    element: (
+      <ProtectedRoute>
+        <WithNav />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "/",
