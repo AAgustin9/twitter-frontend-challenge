@@ -1,6 +1,6 @@
-import styled from "styled-components";
+import styled, { StyledComponent } from "styled-components";
 
-export const StyledButtonContainer = styled.div`
+export const StyledButtonContainer: StyledComponent<"div", any> = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;

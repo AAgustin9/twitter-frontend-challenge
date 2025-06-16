@@ -1,4 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React, {
+    useEffect,
+    useState,
+    ChangeEvent,
+  } from "react";
 import Button from "../button/Button";
 import TweetInput from "../tweet-input/TweetInput";
 import {useHttpRequestService} from "../../service/HttpRequestService";
@@ -11,38 +15,47 @@ import {ButtonType} from "../button/StyledButton";
 import {StyledTweetBoxContainer} from "./TweetBoxContainer";
 import {StyledContainer} from "../common/Container";
 import {StyledButtonContainer} from "./ButtonContainer";
-import {useDispatch, useSelector} from "react-redux";
-import {User} from "../../service";
+import { User } from "../../service";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import type { RootState } from "../../redux/store";
 
-const TweetBox = (props) => {
-    const {parentId, close, mobile} = props;
-    const [content, setContent] = useState("");
-    const [images, setImages] = useState([]);
-    const [imagesPreview, setImagesPreview] = useState([]);
+interface TweetBoxProps {
+    parentId?: string;
+    close?: () => void;
+    mobile?: boolean;
+    borderless?: boolean,
+}
 
-    const {feed, length, query} = useSelector((state) => state.user);
+const TweetBox: React.FC<TweetBoxProps> = ({
+    parentId,
+    close,
+    mobile,
+    borderless,
+}) => {
+    const [content, setContent] = useState<string>("");
+    const [images, setImages] = useState<File[]>([]);
+    const [imagesPreview, setImagesPreview] = useState<string[]>([]);
+    const [user, setUser] = useState<User | undefined>(undefined);
+
+    const {feed, length, query} = useAppSelector((state: RootState) => state.user);
     const httpService = useHttpRequestService();
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const {t} = useTranslation();
-    const service = useHttpRequestService()
-    const [user, setUser] = useState()
-
-
-
+    const service = useHttpRequestService();
 
     useEffect(() => {
         handleGetUser().then(r => setUser(r))
     }, []);
 
-    const handleGetUser = async () => {
-        return await service.me()
+    const handleGetUser = async (): Promise<User> => {
+        return await service.me();
     }
 
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
         setContent(e.target.value);
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (): Promise<void> => {
         try {
             const newPost = await httpService.createPost({
                 content,
@@ -70,14 +83,14 @@ const TweetBox = (props) => {
         }
     };
 
-    const handleRemoveImage = (index) => {
+    const handleRemoveImage = (index: number): void => {
         const newImages = images.filter((i, idx) => idx !== index);
         const newImagesPreview = newImages.map((i) => URL.createObjectURL(i));
         setImages(newImages);
         setImagesPreview(newImagesPreview);
     };
 
-    const handleAddImage = (newImages) => {
+    const handleAddImage = (newImages: File[]): void => {
         setImages(newImages);
         const newImagesPreview = newImages.map((i) => URL.createObjectURL(i));
         setImagesPreview(newImagesPreview);
