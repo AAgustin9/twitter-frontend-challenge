@@ -1,5 +1,6 @@
 import type { PostData, SingInData, SingUpData } from "./index";
 import axios from "axios";
+import axiosClient from "./AxiosClient";
 import { S3Service } from "./S3Service";
 
 const url =
@@ -7,25 +8,21 @@ const url =
 
 const httpRequestService = {
   signUp: async (data: Partial<SingUpData>) => {
-    const res = await axios.post(`${url}/auth/signup`, data);
+    const res = await axiosClient.post("/auth/signup", data);
     if (res.status === 201) {
       localStorage.setItem("token", `Bearer ${res.data.token}`);
       return true;
     }
   },
   signIn: async (data: SingInData) => {
-    const res = await axios.post(`${url}/auth/login`, data);
+    const res = await axiosClient.post("/auth/login", data);
     if (res.status === 200) {
       localStorage.setItem("token", `Bearer ${res.data.token}`);
       return true;
     }
   },
   createPost: async (data: PostData) => {
-    const res = await axios.post(`${url}/post`, data, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
+    const res = await axiosClient.post("/post", data);
     if (res.status === 201) {
       const { upload } = S3Service;
       for (const imageUrl of res.data.images) {
@@ -36,10 +33,7 @@ const httpRequestService = {
     }
   },
   getPaginatedPosts: async (limit: number, after: string, query: string) => {
-    const res = await axios.get(`${url}/post/${query}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
+    const res = await axiosClient.get(`post/${query}`, {
       params: {
         limit,
         after,
@@ -50,20 +44,13 @@ const httpRequestService = {
     }
   },
   getPosts: async (query: string) => {
-    const res = await axios.get(`${url}/post/${query}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
+    const res = await axiosClient.get(`/post/${query}`);
     if (res.status === 200) {
       return res.data;
     }
   },
   getRecommendedUsers: async (limit: number, skip: number) => {
-    const res = await axios.get(`${url}/user`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
+    const res = await axiosClient.get("/user", {
       params: {
         limit,
         skip,
@@ -74,69 +61,41 @@ const httpRequestService = {
     }
   },
   me: async () => {
-    const res = await axios.get(`${url}/user/me`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
+    const res = await axiosClient.get("/user/me");
     if (res.status === 200) {
       return res.data;
     }
   },
   getPostById: async (id: string) => {
-    const res = await axios.get(`${url}/post/${id}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
+    const res = await axiosClient.get(`/post/${id}`);
     if (res.status === 200) {
       return res.data;
     }
   },
   createReaction: async (postId: string, reaction: string) => {
-    const res = await axios.post(
-      `${url}/reaction/${postId}`,
+    const res = await axiosClient.post(
+      `reaction/${postId}`,
       { type: reaction },
-      {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      }
     );
     if (res.status === 201) {
       return res.data;
     }
   },
   deleteReaction: async (reactionId: string) => {
-    const res = await axios.delete(`${url}/reaction/${reactionId}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
+    const res = await axiosClient.delete(`/reaction/${reactionId}`);
     if (res.status === 200) {
       return res.data;
     }
   },
   followUser: async (userId: string) => {
-    const res = await axios.post(
-      `${url}/follow/${userId}`,
-      {},
-      {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      }
-    );
+    const res = await axiosClient.post(
+      `/follow/${userId}`, {});
     if (res.status === 201) {
       return res.data;
     }
   },
   unfollowUser: async (userId: string) => {
-    const res = await axios.delete(`${url}/follow/${userId}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
+    const res = await axiosClient.delete(`/follow/${userId}`);
     if (res.status === 200) {
       return res.data;
     }
@@ -145,10 +104,7 @@ const httpRequestService = {
     try {
       const cancelToken = axios.CancelToken.source();
 
-      const response = await axios.get(`${url}/user/search`, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
+      const response = await axiosClient.get("/user/search", {
         params: {
           username,
           limit,
@@ -166,11 +122,7 @@ const httpRequestService = {
   },
 
   getProfile: async (id: string) => {
-    const res = await axios.get(`${url}/user/profile/${id}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
+    const res = await axiosClient.get(`/user/profile/${id}`);
     if (res.status === 200) {
       return res.data;
     }
@@ -180,10 +132,7 @@ const httpRequestService = {
     after: string,
     id: string
   ) => {
-    const res = await axios.get(`${url}/post/by_user/${id}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
+    const res = await axiosClient.get(`/post/by_user/${id}`, {
       params: {
         limit,
         after,
@@ -195,56 +144,33 @@ const httpRequestService = {
     }
   },
   getPostsFromProfile: async (id: string) => {
-    const res = await axios.get(`${url}/post/by_user/${id}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
-
+    const res = await axiosClient.get(`/post/by_user/${id}`);
     if (res.status === 200) {
       return res.data;
     }
   },
 
   isLogged: async () => {
-    const res = await axios.get(`${url}/user/me`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
+    const res = await axiosClient.get("/user/me");
     return res.status === 200;
   },
 
   getProfileView: async (id: string) => {
-    const res = await axios.get(`${url}/user/${id}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
-
+    const res = await axiosClient.get(`/user/${id}`);
     if (res.status === 200) {
       return res.data;
     }
   },
 
   deleteProfile: async () => {
-    const res = await axios.delete(`${url}/user/me`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
-
+    const res = await axiosClient.delete("/user/me");
     if (res.status === 204) {
       localStorage.removeItem("token");
     }
   },
 
   getChats: async () => {
-    const res = await axios.get(`${url}/chat`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
+    const res = await axiosClient.get("/chat");
 
     if (res.status === 200) {
       return res.data;
@@ -252,11 +178,7 @@ const httpRequestService = {
   },
 
   getMutualFollows: async () => {
-    const res = await axios.get(`${url}/follow/mutual`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
+    const res = await axiosClient.get("/follow/mutual");
 
     if (res.status === 200) {
       return res.data;
@@ -264,17 +186,7 @@ const httpRequestService = {
   },
 
   createChat: async (id: string) => {
-    const res = await axios.post(
-      `${url}/chat`,
-      {
-        users: [id],
-      },
-      {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      }
-    );
+    const res = await axiosClient.post("/chat", { users: [id] });
 
     if (res.status === 201) {
       return res.data;
@@ -282,11 +194,7 @@ const httpRequestService = {
   },
 
   getChat: async (id: string) => {
-    const res = await axios.get(`${url}/chat/${id}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
+    const res = await axiosClient.get(`/chat/${id}`);
 
     if (res.status === 200) {
       return res.data;
@@ -294,11 +202,7 @@ const httpRequestService = {
   },
 
   deletePost: async (id: string) => {
-    await axios.delete(`${url}/post/${id}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
+    await axiosClient.delete(`/post/${id}`);
   },
 
   getPaginatedCommentsByPostId: async (
@@ -306,10 +210,7 @@ const httpRequestService = {
     limit: number,
     after: string
   ) => {
-    const res = await axios.get(`${url}/comment/${id}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
+    const res = await axiosClient.get(`/comment/${id}`, {
       params: {
         limit,
         after,
@@ -320,11 +221,7 @@ const httpRequestService = {
     }
   },
   getCommentsByPostId: async (id: string) => {
-    const res = await axios.get(`${url}/comment/${id}`, {
-      headers: {
-        Authorization: localStorage.getItem("token"),
-      },
-    });
+    const res = await axiosClient.get(`/comment/${id}`);
     if (res.status === 200) {
       return res.data;
     }
@@ -333,7 +230,6 @@ const httpRequestService = {
 
 const useHttpRequestService = () => httpRequestService;
 
-// For class component (remove when unused)
 class HttpService {
   service = httpRequestService;
 }
