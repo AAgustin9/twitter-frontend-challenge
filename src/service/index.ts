@@ -14,7 +14,7 @@ export interface SingInData {
 export interface PostData {
   content: string;
   parentId?: string;
-  images?: File[];
+  images?: string[];
 }
 
 export interface Post {

@@ -18,6 +18,7 @@ import {StyledButtonContainer} from "./ButtonContainer";
 import { User } from "../../service";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import type { RootState } from "../../redux/store";
+import { S3Service } from "../../service/S3Service";
 
 interface TweetBoxProps {
     parentId?: string;
@@ -57,15 +58,28 @@ const TweetBox: React.FC<TweetBoxProps> = ({
 
     const handleSubmit = async (): Promise<void> => {
         try {
+            const keys: string[] = [];
+            const imageUrls: string[] = [];
+
+            for (const file of images) {
+                const { uploadUrl, imageUrl, key } = await httpService.getPostImageUploadUrl(file.type);
+                console.log("this is file type:", file.type);
+                await S3Service.upload(file, uploadUrl);
+                keys.push(key);
+                imageUrls.push(imageUrl);
+            }
+
+
             const newPost = await httpService.createPost({
                 content,
                 parentId,
-                images
+                images: keys,
             });
             
             const currentUser = await handleGetUser();
             const extendedPost = {
                 ...newPost,
+                images: imageUrls,
                 author: currentUser,
                 reactions: [],
                 comments: []

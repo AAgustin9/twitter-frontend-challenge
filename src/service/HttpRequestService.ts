@@ -24,13 +24,15 @@ const httpRequestService = {
   createPost: async (data: PostData) => {
     const res = await axiosClient.post("/post", data);
     if (res.status === 201) {
-      const { upload } = S3Service;
-      for (const imageUrl of res.data.images) {
-        const index: number = res.data.images.indexOf(imageUrl);
-        await upload(data.images![index], imageUrl);
-      }
       return res.data;
     }
+  },
+  getPostImageUploadUrl: async (contentType: string): Promise<{ uploadUrl: string; imageUrl: string; key: string }> => {
+    const res = await axiosClient.post("post/image/upload-url", { contentType });
+    if (res.status !== 200) {
+      throw new Error(`Failed to fetch presigned URL (status ${res.status})`);
+    }
+    return res.data as { uploadUrl: string; imageUrl: string; key: string };
   },
   getPaginatedPosts: async (limit: number, after: string, query: string) => {
     const res = await axiosClient.get(`post/${query}`, {
@@ -45,9 +47,15 @@ const httpRequestService = {
   },
   getPosts: async (query: string) => {
     const res = await axiosClient.get(`/post/${query}`);
-    if (res.status === 200) {
-      return res.data;
-    }
+    if (res.status !== 200) throw new Error("fetch failed");
+    // so that each key becomes an url
+    return res.data.map((post: any) => ({
+      ...post,
+      images: post.images.map(
+        (key: string) =>
+          `https://${process.env.REACT_APP_S3_BUCKET_NAME}.s3.${process.env.REACT_APP_AWS_REGION}.amazonaws.com/${key}`
+      ),
+    }));
   },
   getRecommendedUsers: async (limit: number, skip: number) => {
     const res = await axiosClient.get("/user", {
