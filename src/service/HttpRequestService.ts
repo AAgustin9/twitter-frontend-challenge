@@ -6,6 +6,9 @@ import { S3Service } from "./S3Service";
 const url =
   process.env.REACT_APP_API_URL || "https://twitter-ieea.onrender.com/api";
 
+const getImageUrl = (key: string) =>
+     `https://${process.env.REACT_APP_S3_BUCKET_NAME}.s3.${process.env.REACT_APP_AWS_REGION}.amazonaws.com/${key}`
+
 const httpRequestService = {
   signUp: async (data: Partial<SingUpData>) => {
     const res = await axiosClient.post("/auth/signup", data);
@@ -77,7 +80,11 @@ const httpRequestService = {
   getPostById: async (id: string) => {
     const res = await axiosClient.get(`/post/${id}`);
     if (res.status === 200) {
-      return res.data;
+      const post = res.data
+      return {
+        ...post,
+        images: post.images.map(getImageUrl)
+      }
     }
   },
   createReaction: async (postId: string, reaction: string) => {
@@ -130,7 +137,7 @@ const httpRequestService = {
   },
 
   getProfile: async (id: string) => {
-    const res = await axiosClient.get(`/user/profile/${id}`);
+    const res = await axiosClient.get(`/user/${id}`);
     if (res.status === 200) {
       return res.data;
     }
@@ -148,13 +155,19 @@ const httpRequestService = {
     });
 
     if (res.status === 200) {
-      return res.data;
+      return (res.data as any[]).map((post) => ({
+        ...post,
+        images: post.images.map(getImageUrl),
+      }))
     }
   },
   getPostsFromProfile: async (id: string) => {
     const res = await axiosClient.get(`/post/by_user/${id}`);
     if (res.status === 200) {
-      return res.data;
+      return (res.data as any[]).map((post) => ({
+        ...post,
+        images: post.images.map(getImageUrl),
+      }));
     }
   },
 
