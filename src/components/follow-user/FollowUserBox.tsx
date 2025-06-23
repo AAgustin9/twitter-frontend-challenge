@@ -6,6 +6,7 @@ import {useTranslation} from "react-i18next";
 import {ButtonType} from "../button/StyledButton";
 import "./FollowUserBox.css";
 import {Author, User} from "../../service";
+import { useMe } from "../../hooks/queries/useMe";
 
 interface FollowUserBoxProps {
   profilePicture?: string;
@@ -15,26 +16,20 @@ interface FollowUserBoxProps {
 }
 
 const FollowUserBox = ({
-                         profilePicture,
-                         name,
-                         username,
-                         id,
-                       }: FollowUserBoxProps) => {
+  profilePicture,
+  name,
+  username,
+  id,
+}: FollowUserBoxProps) => {
   const {t} = useTranslation();
   const service = useHttpRequestService()
-  const [user, setUser] = useState<User>()
-
+  const { data: me, isLoading } = useMe();
 
   useEffect(() => {
-    handleGetUser().then(r => {
-      setUser(r)
-      setIsFollowing(r?.following?.some((f: Author) => f.id === id) ?? false);
-    });
-  }, []);
-
-  const handleGetUser = async () => {
-    return await service.me()
-  }
+    if (me) {
+      setIsFollowing(me.following?.some((f: Author) => f.id === id) ?? false);
+    }
+  }, [me, id]);
 
   const [isFollowing, setIsFollowing] = useState(false);
 

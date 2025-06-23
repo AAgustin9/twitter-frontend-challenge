@@ -104,13 +104,13 @@ const httpRequestService = {
   },
   followUser: async (userId: string) => {
     const res = await axiosClient.post(
-      `/follow/${userId}`, {});
+      `/follower/follow/${userId}`, {});
     if (res.status === 201) {
       return res.data;
     }
   },
   unfollowUser: async (userId: string) => {
-    const res = await axiosClient.delete(`/follow/${userId}`);
+    const res = await axiosClient.delete(`/follower/unfollow/${userId}`);
     if (res.status === 200) {
       return res.data;
     }
