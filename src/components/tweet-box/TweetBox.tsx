@@ -19,6 +19,7 @@ import { User } from "../../service";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import type { RootState } from "../../redux/store";
 import { S3Service } from "../../service/S3Service";
+import { useMe } from "../../hooks/queries/useMe";
 
 interface TweetBoxProps {
     parentId?: string;
@@ -36,21 +37,14 @@ const TweetBox: React.FC<TweetBoxProps> = ({
     const [content, setContent] = useState<string>("");
     const [images, setImages] = useState<File[]>([]);
     const [imagesPreview, setImagesPreview] = useState<string[]>([]);
-    const [user, setUser] = useState<User | undefined>(undefined);
+    const { data: user, isLoading } = useMe();
 
     const {feed, length, query} = useAppSelector((state: RootState) => state.user);
     const httpService = useHttpRequestService();
     const dispatch = useAppDispatch();
     const {t} = useTranslation();
-    const service = useHttpRequestService();
 
-    useEffect(() => {
-        handleGetUser().then(r => setUser(r))
-    }, []);
 
-    const handleGetUser = async (): Promise<User> => {
-        return await service.me();
-    }
 
     const handleChange = (e: ChangeEvent<HTMLTextAreaElement>): void => {
         setContent(e.target.value);
@@ -76,11 +70,10 @@ const TweetBox: React.FC<TweetBoxProps> = ({
                 images: keys,
             });
             
-            const currentUser = await handleGetUser();
             const extendedPost = {
                 ...newPost,
                 images: imageUrls,
-                author: currentUser,
+                author: user!,
                 reactions: [],
                 comments: []
             };
