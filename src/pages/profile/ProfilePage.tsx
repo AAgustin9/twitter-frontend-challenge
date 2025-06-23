@@ -124,7 +124,10 @@ const ProfilePage = () => {
       </StyledContainer>
 
       <StyledContainer width="100%">
-        {finalProfile.followers ? <ProfileFeed /> : <StyledH5>Private account</StyledH5>}
+        {finalProfile.private && !finalProfile.isFollowing
+          ? <StyledH5>Private account</StyledH5>
+          : <ProfileFeed /> 
+        }
       </StyledContainer>
 
       <Modal
