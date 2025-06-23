@@ -9,5 +9,6 @@ export function useMe() {
     queryFn: () => svc.me(),
     enabled: !!localStorage.getItem('token'),
     staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
   })
 }

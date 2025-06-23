@@ -1,16 +1,22 @@
 import React, { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useGetRecommendations } from "../../hooks/useGetRecommendations";
 import {
   StyledContainer,
   StyledScrollableContainer,
 } from "../../components/common/Container";
 import FollowUserBox from "../../components/follow-user/FollowUserBox";
 import { StyledH5 } from "../../components/common/text";
+import { useRecommendations } from "../../hooks/queries/useRecommendations";
 
 const RecommendationPage = () => {
   const [page, setPage] = useState(0);
-  const { users, loading } = useGetRecommendations({ page });
+  const {
+    data: users = [],
+    isLoading: loading,
+    isError,
+    error,
+    refetch,
+  } = useRecommendations(page);
   const { t } = useTranslation();
 
   const observer = useRef<IntersectionObserver | null>(null);
@@ -36,31 +42,22 @@ const RecommendationPage = () => {
         <StyledH5>{t("header.connect")}</StyledH5>
       </StyledContainer>
       <StyledScrollableContainer padding={"8px"} gap={"16px"}>
-        {users.map((user, index) => {
-          if (users.length === index + 1) {
-            return (
-              <StyledContainer ref={lastRecommendation} key={"last-div"}>
-                <FollowUserBox
-                  key={"recommendation-" + user.id}
-                  name={user.name}
-                  username={user.username}
-                  profilePicture={user.profilePicture}
-                  id={user.id}
-                />
-              </StyledContainer>
-            );
-          } else {
-            return (
-              <FollowUserBox
-                key={"recommendation-" + user.id}
-                name={user.name}
-                username={user.username}
-                profilePicture={user.profilePicture}
-                id={user.id}
-              />
-            );
-          }
-        })}
+        {loading && <p>Loading recommendations…</p>}
+        {isError && (
+          <div>
+            <p>Error loading recommendations: {String(error)}</p>
+            <button onClick={() => void refetch()}>Retry</button>
+          </div>
+        )}
+        {!loading && !isError && users.map((user) => (
+          <FollowUserBox
+            key={`recommendation-${user.id}`}
+            name={user.name}
+            username={user.username}
+            profilePicture={user.profilePicture}
+            id={user.id}
+          />
+        ))}
       </StyledScrollableContainer>
     </StyledContainer>
   );

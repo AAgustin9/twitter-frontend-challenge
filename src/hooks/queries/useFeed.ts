@@ -9,5 +9,6 @@ export function useFeed(query: string) {
     queryFn: () => svc.getPosts(query),
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
   })
 }
