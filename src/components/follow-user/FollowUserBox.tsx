@@ -4,9 +4,17 @@ import {useHttpRequestService} from "../../service/HttpRequestService";
 import UserDataBox from "../user-data-box/UserDataBox";
 import {useTranslation} from "react-i18next";
 import {ButtonType} from "../button/StyledButton";
-import "./FollowUserBox.css";
 import {Author, User} from "../../service";
 import { useMe } from "../../hooks/queries/useMe";
+import styled from "styled-components";
+
+const FollowUserBoxContainer = styled.div`
+  display: flex;
+  justily-content: space-between;
+  align-items: stretch;
+  max-height: 60px;
+  gap: 8px;
+`;
 
 interface FollowUserBoxProps {
   profilePicture?: string;
@@ -43,7 +51,7 @@ const FollowUserBox = ({
   };
 
   return (
-      <div className="box-container">
+      <FollowUserBoxContainer>
         <UserDataBox
             id={id}
             name={name!}
@@ -56,7 +64,7 @@ const FollowUserBox = ({
             size={"SMALL"}
             onClick={handleFollow}
         />
-      </div>
+      </FollowUserBoxContainer>
   );
 };
 
