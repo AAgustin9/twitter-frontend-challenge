@@ -11,6 +11,7 @@ interface TweetInputProps {
   onChange?: ChangeEventHandler<HTMLTextAreaElement>;
   maxLength: number;
   value?: string;
+  name?: string;
 }
 const TweetInput = ({
   placeholder,
@@ -19,6 +20,7 @@ const TweetInput = ({
   onChange,
   maxLength,
   value,
+  name,
 }: TweetInputProps) => {
   return (
     <StyledTweetInputContainer>
@@ -28,6 +30,7 @@ const TweetInput = ({
         maxLength={maxLength}
         placeholder={placeholder}
         value={value ?? ""}
+        name={name}
       />
     </StyledTweetInputContainer>
   );
