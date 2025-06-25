@@ -10,6 +10,7 @@ import { store } from "../../redux/store";
 import { LightTheme } from "../../util/LightTheme";
 import { ROUTER } from "./Router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ToastProvider } from "../toast/ToastProvider";
 
 i18next.use(initReactI18next).init({
   interpolation: { escapeValue: false },
@@ -33,7 +34,9 @@ export const Layout = () => {
       <Provider store={store}>
         <ThemeProvider theme={LightTheme}>
           <QueryClientProvider client={queryClient}>
-          <RouterProvider router={ROUTER} />
+            <ToastProvider>
+              <RouterProvider router={ROUTER} />
+            </ToastProvider>
           </QueryClientProvider>
         </ThemeProvider>
       </Provider>
