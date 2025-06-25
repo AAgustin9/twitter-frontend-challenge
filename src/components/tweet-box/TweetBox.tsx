@@ -19,6 +19,8 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import type { RootState } from "../../redux/store";
 import { S3Service } from "../../service/S3Service";
 import { useMe } from "../../hooks/queries/useMe";
+import { ToastType } from "../toast/Toast";
+import { useToast } from "../toast/ToastProvider";
 
 interface TweetBoxProps {
   parentId?: string;
@@ -43,6 +45,7 @@ const TweetBox: React.FC<TweetBoxProps> = ({
   const httpService = useHttpRequestService();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+  const showToast = useToast();
 
   const [imagesPreview, setImagesPreview] = React.useState<string[]>([]);
 
@@ -88,10 +91,13 @@ const TweetBox: React.FC<TweetBoxProps> = ({
         dispatch(updateFeed([extendedPost, ...feed]));
         dispatch(setLength(feed.length + 1));
 
+        showToast(ToastType.SUCCESS, "Tweet posted successfully");
+
         resetForm();
         setImagesPreview([]);
         close && close();
-      } catch (e) {
+      } catch (e: any) {
+        showToast(ToastType.ALERT, e.message || "Failed to post tweet");
         console.log(e);
       }
     },

@@ -11,6 +11,8 @@ import {StyledContainer} from "../../common/Container";
 import {StyledP} from "../../common/text";
 import {useHttpRequestService} from "../../../service/HttpRequestService";
 import { useMe } from "../../../hooks/queries/useMe";
+import { useToast } from "../../toast/ToastProvider";
+import { ToastType } from "../../toast/Toast";
 
 interface LogoutPromptProps {
   show: boolean;
@@ -23,6 +25,7 @@ const LogoutPrompt = ({ show }: LogoutPromptProps) => {
   const { t, i18n } = useTranslation();
   const service = useHttpRequestService()
   const { data: user, isLoading } = useMe();
+  const showToast = useToast();
 
   const handleClick = () => {
     setShowModal(true);
@@ -39,6 +42,7 @@ const LogoutPrompt = ({ show }: LogoutPromptProps) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    showToast(ToastType.SUCCESS, "Logged out successfully");
     navigate("/sign-in");
   };
 
