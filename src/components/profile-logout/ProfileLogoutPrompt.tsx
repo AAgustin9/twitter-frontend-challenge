@@ -9,6 +9,7 @@ import {StyledP} from "../common/text";
 import {StyledContainer} from "../common/Container";
 import {useHttpRequestService} from "../../service/HttpRequestService";
 import { useMe } from "../../hooks/queries/useMe";
+import PortalHelper from "../portal/PortalHelper";
 
 
 interface ProfileLogoutPromptProps {
@@ -44,9 +45,11 @@ const ProfileLogoutPrompt = ({margin, direction}: ProfileLogoutPromptProps) => {
             <StyledProfileLogoutPromptContainer direction={direction}>
                 <img src={user?.profilePicture ?? icon} className="icon" alt="Icon"/>
                 {logoutOpen &&
-                    <StyledLogoutPrompt margin={margin} onClick={(event) => handleButtonClick(event)}>
-                        <LogoutPrompt show={logoutOpen}/>
-                    </StyledLogoutPrompt>
+                    <PortalHelper>
+                        <StyledLogoutPrompt margin={margin} onClick={(event) => handleButtonClick(event)}>
+                            <LogoutPrompt show={logoutOpen}/>
+                        </StyledLogoutPrompt>
+                    </PortalHelper>
                 }
             </StyledProfileLogoutPromptContainer>
             <StyledContainer padding={"4px 0"} gap={"4px"} className={'user-info'}>

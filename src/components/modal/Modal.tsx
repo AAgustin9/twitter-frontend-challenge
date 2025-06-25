@@ -5,6 +5,7 @@ import { ButtonType } from "../button/StyledButton";
 import { StyledModalContainer } from "./ModalContainer";
 import { StyledContainer } from "../common/Container";
 import { StyledH5, StyledP } from "../common/text";
+import PortalHelper from "../portal/PortalHelper";
 
 interface ModalProps {
   show: boolean;
@@ -24,7 +25,7 @@ const Modal = ({
   title,
 }: ModalProps) => {
   return (
-    <>
+    <PortalHelper>
       {show && (
         <StyledBlurredBackground onClick={onClose}>
           <StyledModalContainer onClick={e => e.stopPropagation()}>
@@ -56,7 +57,7 @@ const Modal = ({
           </StyledModalContainer>
         </StyledBlurredBackground>
       )}
-    </>
+    </PortalHelper>
   );
 };
 

@@ -13,6 +13,7 @@ import {useHttpRequestService} from "../../../service/HttpRequestService";
 import { useMe } from "../../../hooks/queries/useMe";
 import { useToast } from "../../toast/ToastProvider";
 import { ToastType } from "../../toast/Toast";
+import PortalHelper from "../../portal/PortalHelper";
 
 interface LogoutPromptProps {
   show: boolean;
@@ -53,25 +54,27 @@ const LogoutPrompt = ({ show }: LogoutPromptProps) => {
   return (
     <>
       {showPrompt && (
-        <StyledPromptContainer>
-          <StyledContainer
-            flexDirection={"row"}
-            gap={"16px"}
-            borderBottom={"1px solid #ebeef0"}
-            padding={"16px"}
-            alignItems={"center"}
-          >
-            <StyledP primary>Es:</StyledP>
-            <SwitchButton
-              checked={i18n.language === "es"}
-              onChange={handleLanguageChange}
-            />
-          </StyledContainer>
-          <StyledContainer onClick={handleClick} alignItems={"center"}>
-            <StyledP primary>
-              {`${t("buttons.logout")} @${ user?.username }`}</StyledP>
-          </StyledContainer>
-        </StyledPromptContainer>
+        <PortalHelper>
+          <StyledPromptContainer>
+            <StyledContainer
+              flexDirection={"row"}
+              gap={"16px"}
+              borderBottom={"1px solid #ebeef0"}
+              padding={"16px"}
+              alignItems={"center"}
+            >
+              <StyledP primary>Es:</StyledP>
+              <SwitchButton
+                checked={i18n.language === "es"}
+                onChange={handleLanguageChange}
+              />
+            </StyledContainer>
+            <StyledContainer onClick={handleClick} alignItems={"center"}>
+              <StyledP primary>
+                {`${t("buttons.logout")} @${ user?.username }`}</StyledP>
+            </StyledContainer>
+          </StyledPromptContainer>
+        </PortalHelper>
       )}
       <Modal
         show={showModal}

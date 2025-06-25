@@ -3,6 +3,7 @@ import { Author } from "../../../service";
 import UserDataBox from "../../user-data-box/UserDataBox";
 import { StyledContainer } from "../../common/Container";
 import { StyledSearchResultModalContainer } from "./SearchResultModalContainer";
+import PortalHelper from "../../portal/PortalHelper";
 
 interface SearchResultModalProps {
   show: boolean;
@@ -12,8 +13,10 @@ export const SearchResultModal = ({
   show,
   results,
 }: SearchResultModalProps) => {
+if (!show) return null;
+
   return (
-    <>
+    <PortalHelper>
       {show && (
         <StyledContainer style={{ width: "100%" }}>
           <StyledSearchResultModalContainer>
@@ -32,7 +35,7 @@ export const SearchResultModal = ({
           </StyledSearchResultModalContainer>
         </StyledContainer>
       )}
-    </>
+    </PortalHelper>
   );
 };
 
