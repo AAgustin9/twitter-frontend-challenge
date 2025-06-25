@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import Toast, { ToastType } from "./Toast";
+import PortalHelper from "../portal/PortalHelper";
 
 type ToastItem = { id: string, type: ToastType, message: string };
 interface Context { showToast: (type: ToastType, message: string) => void; }
@@ -24,22 +25,24 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     return (
         <ToastContext.Provider value={{ showToast }}>
          {children}
-         <div
-           style={{
-             position: 'fixed',
-             top: 20,
-             left: '50%',
-             transform: 'translateX(-50%)',
-             display: 'flex',
-             flexDirection: 'column',
-             gap: 8,
-             zIndex: 1000,
-           }}
-         >
-           {toasts.map(({ id, type, message }) => (
-             <Toast key={id} type={type} message={message} />
-           ))}
-         </div>
+         <PortalHelper>
+          <div
+            style={{
+              position: 'fixed',
+              top: 20,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              zIndex: 1000,
+            }}
+          >
+            {toasts.map(({ id, type, message }) => (
+              <Toast key={id} type={type} message={message} />
+            ))}
+          </div>
+         </PortalHelper>
        </ToastContext.Provider>
     );
 };

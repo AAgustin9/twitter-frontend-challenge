@@ -45,11 +45,9 @@ const ProfileLogoutPrompt = ({margin, direction}: ProfileLogoutPromptProps) => {
             <StyledProfileLogoutPromptContainer direction={direction}>
                 <img src={user?.profilePicture ?? icon} className="icon" alt="Icon"/>
                 {logoutOpen &&
-                    <PortalHelper>
                         <StyledLogoutPrompt margin={margin} onClick={(event) => handleButtonClick(event)}>
                             <LogoutPrompt show={logoutOpen}/>
                         </StyledLogoutPrompt>
-                    </PortalHelper>
                 }
             </StyledProfileLogoutPromptContainer>
             <StyledContainer padding={"4px 0"} gap={"4px"} className={'user-info'}>
