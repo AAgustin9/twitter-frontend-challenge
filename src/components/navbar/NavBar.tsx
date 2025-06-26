@@ -6,7 +6,7 @@ import {StyledTweetButton} from "../tweet-button/StyledTweetButton";
 import TweetModal from "../tweet-modal/TweetModal";
 import {IconType, LogoIcon} from "../icon/Icon";
 import {useTranslation} from "react-i18next";
-import {ButtonType} from "../button/StyledButton";
+import StyledButton, {ButtonType} from "../button/StyledButton";
 import {StyledNavBarContainer} from "./NavBarContainer";
 import {StyledContainer} from "../common/Container";
 import {StyledIconContainer} from "./IconContainer";
@@ -78,6 +78,13 @@ const NavBar = () => {
                   setTweetModalOpen(true);
                 }}
             ></Button>
+            <StyledButton
+              size="180px"
+              buttonType={ButtonType.DEFAULT}
+              onClick={() => navigate("/messages")}
+            >
+              Messages
+            </StyledButton>
           </StyledContainer>
           <TweetModal
               open={tweetModalOpen}

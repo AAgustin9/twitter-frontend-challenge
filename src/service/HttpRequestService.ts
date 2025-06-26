@@ -1,6 +1,7 @@
 import type { PostData, SingInData, SingUpData } from "./index";
 import axios from "axios";
 import axiosClient from "./AxiosClient";
+import { User } from "./index";
 import { S3Service } from "./S3Service";
 
 const url =
@@ -114,6 +115,11 @@ const httpRequestService = {
     if (res.status === 200) {
       return res.data;
     }
+  },
+  getFollowing: async () => {
+    const res = await axiosClient.get('follower/following')
+    if (res.status !== 200) throw new Error('Fetch failed')
+    return res.data as User[]
   },
   searchUsers: async (username: string, limit: number, skip: number) => {
     try {
