@@ -7,6 +7,7 @@ import { ToastType } from "../../components/toast/Toast";
 import styled from "styled-components";
 import { BackArrowIcon } from "../../components/icon/Icon";
 import { useNavigate } from "react-router-dom";
+import { useProfile } from "../../hooks/queries/useProfile";
 
 const Page = styled.div`
     display: flex;
@@ -72,75 +73,100 @@ const SendButton = styled.button`
 `;
 
 const ChatPage = () => {
-    const { id: receiverId } = useParams<{ id: string}>();
-    const socket = useSocket();
-    const showToast = useToast();
-    const [messages, setMessages] = useState<MessageDTO[]>([]);
-    const [input, setInput] = useState("");
-    const bottomRef = useRef<HTMLDivElement>(null);
-    const navigate = useNavigate();
+  const { id: receiverId } = useParams<{ id: string}>();
+  const { data: receiverUser } = useProfile(receiverId!);
+  const socket = useSocket();
+  const showToast = useToast();
+  const [messages, setMessages] = useState<MessageDTO[]>([]);
+  const [input, setInput] = useState("");
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        if (!receiverId) return;
-
-        socket.startChat(receiverId);
-        socket.onHistory((history) => {
-            setMessages(history);
-            showToast(ToastType.SUCCESS, "Chat connected");
-        });
-        socket.onNewMessage((msg) => {
-            setMessages((prev) => [...prev, msg]);
-        });
-        socket.onError((e) => showToast(ToastType.ALERT, e.message));
-        
-        return () => socket.disconnect();
-    }, [receiverId, socket, showToast]);
-
-
-    useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
-
-    const handleSend = () => {
-        if (input.trim() && receiverId) {
-            socket.send_message(receiverId, input.trim());
-            setInput("");
-        }
+  useEffect(() => {
+    if (!receiverId) return;
+  
+    const socketInstance = socket.getSocket();
+    if (!socketInstance) return;
+  
+    const handleConnect = () => {
+      console.log("Socket connected:", socketInstance.id);
+      socket.startChat(receiverId);
     };
+  
+    socket.connect();
+  
+    socketInstance.on("connect", handleConnect);
+  
+    socket.onHistory((history) => {
+      setMessages(history);
+      //showToast(ToastType.SUCCESS, "Chat connected");
+    });
+  
+    socket.onNewMessage((msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+  
+    socket.onError((e) => {
+      showToast(ToastType.ALERT, e.message);
+    });
+  
+    return () => {
+      socketInstance.off("connect", handleConnect);
+      socket.disconnect();
+    };
+  }, [receiverId]);
+  
 
-    return (
-        <Page>
-          <Header>
-            <BackArrowIcon
-              onClick={() => navigate(-1)}
-            />
-            <Title>Chat with {receiverId}</Title>
-          </Header>
 
-          <Messages>
-            {messages.map((m) => (
-              <Bubble
-                key={m.id}
-                mine={m.senderId !== receiverId}
-              >
-                {m.content}
-              </Bubble>
-            ))}
-            <div ref={bottomRef} />
-          </Messages>
- 
-          <InputBar onSubmit={handleSend}>
-            <TextInput
-              placeholder="Type a message…"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-            />
-            <SendButton type="submit" disabled={!input.trim()}>
-              Send
-            </SendButton>
-          </InputBar>
-        </Page>
-    );
+  useEffect(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const handleSend = () => {
+      if (input.trim() && receiverId) {
+          socket.send_message(receiverId, input.trim());
+          setInput("");
+      }
+  };
+
+  return (
+      <Page>
+        <Header>
+          <BackArrowIcon
+            onClick={() => navigate(-1)}
+          />
+          <Title>
+            Chat with{" "}
+            {receiverUser
+              ? receiverUser.name || receiverUser.username
+              : receiverId}
+          </Title>
+        </Header>
+
+        <Messages>
+          {messages.map((m) => (
+            <Bubble
+              key={m.id}
+              mine={m.senderId !== receiverId}
+            >
+              {m.content}
+            </Bubble>
+          ))}
+          <div ref={bottomRef} />
+        </Messages>
+
+        <InputBar onSubmit={handleSend}>
+          <TextInput
+            placeholder="Type a message…"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+          <SendButton type="submit" disabled={!input.trim()}>
+            Send
+          </SendButton>
+        </InputBar>
+      </Page>
+  );
 };
  
 export default ChatPage;

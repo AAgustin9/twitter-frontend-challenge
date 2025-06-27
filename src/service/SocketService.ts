@@ -18,9 +18,20 @@ class SocketService {
     connect() {
         const token = localStorage.getItem("token")?.replace(/^Bearer\s+/i, "");
         this.socket = io(
-            process.env.REACT_APP_API_URL,
-            { auth: { token }}
+            "http://localhost:8080",
+            { 
+                auth: { token },
+                transports: ["websocket"],
+            }
         );
+        
+        this.socket.on("connect", () => {
+            console.log("✅ Connected to WebSocket:", this.socket?.id);
+        });
+        
+        this.socket.on("disconnect", (reason) => {
+            console.warn("🔌 Disconnected:", reason);
+        });
     }
 
     disconnect() {
@@ -32,19 +43,23 @@ class SocketService {
     }
 
     send_message(receiverId: string, content: string) {
-    this.socket?.emit("send_message", { receiverId, content });
+        this.socket?.emit("send_message", { receiverId, content });
     }
 
     onHistory(fn: (msgs: MessageDTO[]) => void) {
-    this.socket?.on("chat_history", fn);
+        this.socket?.on("chat_history", fn);
     }
 
     onNewMessage(fn: (msg: MessageDTO) => void) {
-    this.socket?.on("new_message", fn);
+        this.socket?.on("new_message", fn);
     }
 
     onError(fn: (err: { message: string }) => void) {
-    this.socket?.on("error", fn);
+        this.socket?.on("error", fn);
+    }
+
+    getSocket() {
+        return this.socket;
     }
 }
 

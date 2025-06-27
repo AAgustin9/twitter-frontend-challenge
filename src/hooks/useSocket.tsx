@@ -1,9 +1,7 @@
-import { createContext, useEffect, ReactNode, useContext } from "react";
+import { useEffect } from "react";
 import { socketService } from "../service/SocketService";
 
-const SocketContext = createContext(socketService);
-
-export const SocketProvider = ({ children }: { children: ReactNode }) => {
+export function useSocket() {
   useEffect(() => {
     socketService.connect();
     return () => {
@@ -11,11 +9,5 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  return (
-    <SocketContext.Provider value={socketService}>
-      {children}
-    </SocketContext.Provider> 
-  );
-};
-
-export const useSocket = () => useContext(SocketContext);
+  return socketService;
+}

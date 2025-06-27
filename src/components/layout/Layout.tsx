@@ -11,7 +11,7 @@ import { LightTheme } from "../../util/LightTheme";
 import { ROUTER } from "./Router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastProvider } from "../toast/ToastProvider";
-import { SocketProvider } from "../../hooks/useSocket";
+
 
 i18next.use(initReactI18next).init({
   interpolation: { escapeValue: false },
@@ -35,11 +35,9 @@ export const Layout = () => {
       <Provider store={store}>
         <ThemeProvider theme={LightTheme}>
           <QueryClientProvider client={queryClient}>
-            <SocketProvider>
               <ToastProvider>
                 <RouterProvider router={ROUTER} />
               </ToastProvider>
-            </SocketProvider>
           </QueryClientProvider>
         </ThemeProvider>
       </Provider>
