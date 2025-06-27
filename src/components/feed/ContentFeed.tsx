@@ -16,19 +16,25 @@ const ContentFeed = () => {
     
   const allPosts = data?.pages.flat() ?? [];
 
-  useEffect(() => {
-    const onScroll = () => {
-      const nearBottom =
-        window.innerHeight + window.screenY >= document.body.offsetHeight - 300;
-      
-      if (nearBottom && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
-      }
-    };
-
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+    useEffect(() => {
+      const container = document.getElementById("feed-container");
+      if (!container) return;
+  
+      const onScroll = () => {
+        const threshold = 100;
+        const distanceFromBottom =
+          container.scrollHeight - container.scrollTop - container.clientHeight;
+  
+        if (distanceFromBottom < threshold && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      };
+  
+      container.addEventListener("scroll", onScroll);
+      return () => {
+        container.removeEventListener("scroll", onScroll);
+      };
+    }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   if (isError) return <div>Oops, could not load feed.</div>
   return <Feed posts={allPosts} loading={isLoading || isFetchingNextPage} />;

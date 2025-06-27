@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const StyledFeedContainer = styled.div`
+export const StyledFeedContainer = styled.div.attrs({ id: "feed-container" })`
   display: flex;
   flex-direction: column;
   align-items: flex-start;

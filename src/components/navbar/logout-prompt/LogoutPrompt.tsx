@@ -14,6 +14,7 @@ import { useMe } from "../../../hooks/queries/useMe";
 import { useToast } from "../../toast/ToastProvider";
 import { ToastType } from "../../toast/Toast";
 import PortalHelper from "../../portal/PortalHelper";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface LogoutPromptProps {
   show: boolean;
@@ -27,6 +28,7 @@ const LogoutPrompt = ({ show }: LogoutPromptProps) => {
   const service = useHttpRequestService()
   const { data: user, isLoading } = useMe();
   const showToast = useToast();
+  const queryClient = useQueryClient();
 
   const handleClick = () => {
     setShowModal(true);
@@ -43,6 +45,7 @@ const LogoutPrompt = ({ show }: LogoutPromptProps) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    queryClient.invalidateQueries();
     showToast(ToastType.SUCCESS, "Logged out successfully");
     navigate("/sign-in");
   };

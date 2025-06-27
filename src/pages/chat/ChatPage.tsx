@@ -132,9 +132,6 @@ const ChatPage = () => {
   return (
       <Page>
         <Header>
-          <BackArrowIcon
-            onClick={() => navigate(-1)}
-          />
           <Title>
             Chat with{" "}
             {receiverUser
