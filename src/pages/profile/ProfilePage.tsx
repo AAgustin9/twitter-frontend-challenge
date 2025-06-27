@@ -123,7 +123,11 @@ const ProfilePage = () => {
         </StyledContainer>
       </StyledContainer>
 
-      <StyledContainer width="100%">
+      <StyledContainer 
+      width="100%"
+      flex={1}
+      overflowY="auto"
+      >
         {finalProfile.private && !finalProfile.isFollowing
           ? <StyledH5>Private account</StyledH5>
           : <ProfileFeed /> 
