@@ -10,6 +10,7 @@ import { ButtonType } from "../../../components/button/StyledButton";
 import { StyledH3 } from "../../../components/common/text";
 import { useToast } from '../../../components/toast/ToastProvider';
 import { ToastType } from '../../../components/toast/Toast';
+import { Input } from "../../../components/common/input/Input";
 
 const SignInPage = () => {
   const [email, setEmail] = useState("");
@@ -55,21 +56,28 @@ const SignInPage = () => {
             <StyledH3>{t("title.login")}</StyledH3>
           </div>
           <div className={"input-container"}>
-            <LabeledInput
-              required
-              placeholder={"Enter user..."}
-              title={t("input-params.username")}
-              error={error}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <LabeledInput
-              type="password"
-              required
-              placeholder={"Enter password..."}
-              title={t("input-params.password")}
-              error={error}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+          <Input
+            name="email"
+            required
+            variant="outlined"
+            inputSize="medium"
+            placeholder={t("input-params.username")}
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            error={error}
+          />
+          <Input
+            name="password"
+            type="password"
+            required
+            variant="outlined"
+            inputSize="medium"
+            placeholder={t("input-params.password")}
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            error={error}
+            style={{ marginTop: 16 }}
+          />
             <p className={"error-message"}>{error && t("error.login")}</p>
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>

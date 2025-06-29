@@ -125,9 +125,8 @@ const httpRequestService = {
     try {
       const cancelToken = axios.CancelToken.source();
 
-      const response = await axiosClient.get("/user/search", {
+      const response = await axiosClient.get(`/user/by_username/${username}`, {
         params: {
-          username,
           limit,
           skip,
         },

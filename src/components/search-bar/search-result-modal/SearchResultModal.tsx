@@ -13,29 +13,24 @@ export const SearchResultModal = ({
   show,
   results,
 }: SearchResultModalProps) => {
-if (!show) return null;
+  if (!show) return null;
 
   return (
-    <PortalHelper>
-      {show && (
-        <StyledContainer style={{ width: "100%" }}>
-          <StyledSearchResultModalContainer>
-            {(results.length === 0 && <div>No results</div>) ||
-              results.map((author) => {
-                return (
-                  <UserDataBox
-                    key={"search-result-" + author.id}
-                    username={author.username}
-                    name={author.name!}
-                    id={author.id}
-                    profilePicture={author.profilePicture!}
-                  />
-                );
-              })}
-          </StyledSearchResultModalContainer>
-        </StyledContainer>
+    <StyledSearchResultModalContainer>
+      {results.length === 0 ? (
+        <div>No results</div>
+      ) : (
+        results.map((author) => (
+          <UserDataBox
+            key={"search-result-" + author.id}
+            username={author.username}
+            name={author.name!}
+            id={author.id}
+            profilePicture={author.profilePicture!}
+          />
+        ))
       )}
-    </PortalHelper>
+    </StyledSearchResultModalContainer>
   );
 };
 

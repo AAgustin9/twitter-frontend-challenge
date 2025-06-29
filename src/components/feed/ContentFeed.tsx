@@ -12,6 +12,7 @@ const ContentFeed = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch,
   } = useInfiniteFeed(query);
     
   const allPosts = data?.pages.flat() ?? [];
@@ -37,6 +38,15 @@ const ContentFeed = () => {
     }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   if (isError) return <div>Oops, could not load feed.</div>
-  return <Feed posts={allPosts} loading={isLoading || isFetchingNextPage} />;
+  return (
+    <>
+      <div style={{ width: "100%", textAlign: "left", padding: "16px 16px" }}>
+        <button onClick={() => refetch()} disabled={isLoading}>
+          Refresh
+        </button>
+      </div>
+      <Feed posts={allPosts} loading={isLoading || isFetchingNextPage} />
+    </>
+  );
 };
 export default ContentFeed;
