@@ -111,7 +111,7 @@ const httpRequestService = {
     }
   },
   unfollowUser: async (userId: string) => {
-    const res = await axiosClient.delete(`/follower/unfollow/${userId}`);
+    const res = await axiosClient.post(`/follower/unfollow/${userId}`);
     if (res.status === 200) {
       return res.data;
     }
