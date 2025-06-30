@@ -13,6 +13,7 @@ const HomePage = () => {
   const navigate = useNavigate();
   const query = useAppSelector((state) => state.user.query);
   const service = useHttpRequestService();
+  console.log(localStorage.getItem("token"));
 
   const handleSetUser = async () => {
     try {

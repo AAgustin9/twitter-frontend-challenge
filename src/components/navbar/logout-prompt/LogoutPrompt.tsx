@@ -10,7 +10,11 @@ import {StyledPromptContainer} from "./PromptContainer";
 import {StyledContainer} from "../../common/Container";
 import {StyledP} from "../../common/text";
 import {useHttpRequestService} from "../../../service/HttpRequestService";
-import {User} from "../../../service";
+import { useMe } from "../../../hooks/queries/useMe";
+import { useToast } from "../../toast/ToastProvider";
+import { ToastType } from "../../toast/Toast";
+import PortalHelper from "../../portal/PortalHelper";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface LogoutPromptProps {
   show: boolean;
@@ -22,16 +26,9 @@ const LogoutPrompt = ({ show }: LogoutPromptProps) => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const service = useHttpRequestService()
-  const [user, setUser] = useState<User>()
-
-
-  useEffect(() => {
-    handleGetUser().then(r => setUser(r))
-  }, []);
-
-  const handleGetUser = async () => {
-    return await service.me()
-  }
+  const { data: user, isLoading } = useMe();
+  const showToast = useToast();
+  const queryClient = useQueryClient();
 
   const handleClick = () => {
     setShowModal(true);
@@ -48,6 +45,8 @@ const LogoutPrompt = ({ show }: LogoutPromptProps) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    queryClient.invalidateQueries();
+    showToast(ToastType.SUCCESS, "Logged out successfully");
     navigate("/sign-in");
   };
 
@@ -73,9 +72,8 @@ const LogoutPrompt = ({ show }: LogoutPromptProps) => {
             />
           </StyledContainer>
           <StyledContainer onClick={handleClick} alignItems={"center"}>
-            <StyledP primary>{`${t("buttons.logout")} @${
-              user?.username
-            }`}</StyledP>
+            <StyledP primary>
+              {`${t("buttons.logout")} @${ user?.username }`}</StyledP>
           </StyledContainer>
         </StyledPromptContainer>
       )}

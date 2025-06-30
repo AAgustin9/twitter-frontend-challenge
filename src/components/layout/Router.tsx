@@ -10,6 +10,9 @@ import ProfilePage from "../../pages/profile/ProfilePage";
 import TweetPage from "../../pages/create-tweet-page/TweetPage";
 import CommentPage from "../../pages/create-comment-page/CommentPage";
 import PostPage from "../../pages/post-page/PostPage";
+import ProtectedRoute from "../common/ProtectedRoute";
+import ChatPage from "../../pages/chat/ChatPage";
+import MessagesPage from "../../pages/following/MessagesPage";
 
 const WithNav = () => {
   return (
@@ -30,7 +33,11 @@ export const ROUTER = createBrowserRouter([
     element: <SignInPage />,
   },
   {
-    element: <WithNav />,
+    element: (
+      <ProtectedRoute>
+        <WithNav />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "/",
@@ -55,6 +62,14 @@ export const ROUTER = createBrowserRouter([
       {
         path: "/post/:id",
         element: <CommentPage />,
+      },
+      {
+        path: "/chat/:id",
+        element: <ChatPage />,
+      },
+      { 
+        path: "/messages", 
+        element: <MessagesPage /> 
       },
     ],
   },

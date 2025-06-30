@@ -21,11 +21,13 @@ export const SearchBar = () => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(async () => {
       try {
-        setResults(await service.searchUsers(inputQuery, 4, 0));
+        const res = await service.searchUsers(inputQuery, 4, 0);
+        setResults(res ?? []);
       } catch (error) {
         console.log(error);
+        setResults([]); 
       }
-    }, 300);
+    }, 900);
   };
 
   return (

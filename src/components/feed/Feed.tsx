@@ -10,9 +10,10 @@ interface FeedProps {
 }
 
 const Feed = ({ posts, loading }: FeedProps) => {
+  const safePosts = posts ?? [];
   return (
     <StyledContainer width={"100%"} alignItems={"center"}>
-      {posts
+      {safePosts
         .filter((post, index, self) => {
           return self.findIndex((p) => p.id === post.id) === index;
         })
