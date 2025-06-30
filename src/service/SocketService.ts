@@ -17,13 +17,14 @@ class SocketService {
 
     connect() {
         const token = localStorage.getItem("token")?.replace(/^Bearer\s+/i, "");
-        this.socket = io(
-            "http://localhost:8080",
-            { 
-                auth: { token },
-                transports: ["websocket"],
-            }
-        );
+        const apiUrl = process.env.REACT_APP_URL ?? "http://localhost:8080";
+        const parsed = new URL(apiUrl);
+        const wsProtocol = parsed.protocol === "https:" ? "wss:" : "ws:";
+        const socketUrl = `${wsProtocol}//${parsed.host}`;
+        this.socket = io(socketUrl, {
+            auth: { token },
+            transports: ["websocket"],
+        });
         
         this.socket.on("connect", () => {
             console.log("✅ Connected to WebSocket:", this.socket?.id);
