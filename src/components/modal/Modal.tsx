@@ -5,6 +5,7 @@ import { ButtonType } from "../button/StyledButton";
 import { StyledModalContainer } from "./ModalContainer";
 import { StyledContainer } from "../common/Container";
 import { StyledH5, StyledP } from "../common/text";
+import PortalHelper from "../portal/PortalHelper";
 
 interface ModalProps {
   show: boolean;
@@ -24,10 +25,10 @@ const Modal = ({
   title,
 }: ModalProps) => {
   return (
-    <>
+    <PortalHelper>
       {show && (
-        <StyledBlurredBackground>
-          <StyledModalContainer>
+        <StyledBlurredBackground onClick={onClose}>
+          <StyledModalContainer onClick={e => e.stopPropagation()}>
             <StyledContainer alignItems={"center"} justifyContent={"center"}>
               {img && (
                 <img src={img} alt={"modal"} width={"32px"} height={"26px"} />
@@ -56,7 +57,7 @@ const Modal = ({
           </StyledModalContainer>
         </StyledBlurredBackground>
       )}
-    </>
+    </PortalHelper>
   );
 };
 

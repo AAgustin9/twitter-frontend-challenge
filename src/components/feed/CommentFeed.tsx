@@ -1,15 +1,18 @@
 import React from "react";
 import Feed from "./Feed";
-import { useGetComments } from "../../hooks/useGetComments";
+import { useComments } from "../../hooks/queries/useComments";
 
 interface CommentFeedProps {
   postId: string;
 }
 const CommentFeed = ({ postId }: CommentFeedProps) => {
-  const { posts, loading } = useGetComments({
-    postId,
-  });
+  const {
+    data: posts = [],
+    isLoading: loading,
+    isError,
+  } = useComments(postId);
 
+  if (isError) return <div>Error loading comments</div>
   return (
     <>
       <Feed posts={posts} loading={loading} />

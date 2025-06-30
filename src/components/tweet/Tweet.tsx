@@ -12,6 +12,7 @@ import DeletePostModal from "./delete-post-modal/DeletePostModal";
 import ImageContainer from "./tweet-image/ImageContainer";
 import CommentModal from "../comment/comment-modal/CommentModal";
 import {useNavigate} from "react-router-dom";
+import { useMe } from "../../hooks/queries/useMe";
 
 interface TweetProps {
   post: Post;
@@ -23,18 +24,11 @@ const Tweet = ({post}: TweetProps) => {
   const [showCommentModal, setShowCommentModal] = useState<boolean>(false);
   const service = useHttpRequestService();
   const navigate = useNavigate();
-  const [user, setUser] = useState<User>()
-
-  useEffect(() => {
-    handleGetUser().then(r => setUser(r))
-  }, []);
-
-  const handleGetUser = async () => {
-    return await service.me()
-  }
+  const { data: user, isLoading } = useMe();
 
   const getCountByType = (type: string): number => {
-    return actualPost?.reactions?.filter((r) => r.type === type).length ?? 0;
+    const matches = actualPost.reactions?.filter(r => r.type === type);
+    return matches?.length ?? 0;
   };
 
   const handleReaction = async (type: string) => {
@@ -51,9 +45,9 @@ const Tweet = ({post}: TweetProps) => {
   };
 
   const hasReactedByType = (type: string): boolean => {
-    return actualPost.reactions.some(
-        (r) => r.type === type && r.userId === user?.id
-    );
+    return actualPost.reactions
+      ?.some( r => r.type === type && r.userId === user?.id)
+      ?? false;
   };
 
   return (

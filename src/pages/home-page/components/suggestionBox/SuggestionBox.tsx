@@ -4,9 +4,18 @@ import { useHttpRequestService } from "../../../../service/HttpRequestService";
 import { useTranslation } from "react-i18next";
 import { User } from "../../../../service";
 import { StyledSuggestionBoxContainer } from "./SuggestionBoxContainer";
+ 
+interface SuggestionUser {
+  id: string;
+  name?: string;
+  username: string;
+  profileImageUrl?: string;
+  private: boolean;
+  isFollowing: boolean;
+}
 
 const SuggestionBox = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<SuggestionUser[]>([]);
   const httpService = useHttpRequestService();
   const { t } = useTranslation();
 
@@ -35,7 +44,8 @@ const SuggestionBox = () => {
               id={user.id}
               name={user.name}
               username={user.username}
-              profilePicture={user.profilePicture}
+              isInitiallyFollowing={user.isFollowing}
+              profilePicture={user.profileImageUrl}
             />
           ))
       ) : (

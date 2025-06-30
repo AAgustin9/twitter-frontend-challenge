@@ -4,51 +4,65 @@ import {useHttpRequestService} from "../../service/HttpRequestService";
 import UserDataBox from "../user-data-box/UserDataBox";
 import {useTranslation} from "react-i18next";
 import {ButtonType} from "../button/StyledButton";
-import "./FollowUserBox.css";
 import {Author, User} from "../../service";
+import { useMe } from "../../hooks/queries/useMe";
+import styled from "styled-components";
+import { useToast } from "../toast/ToastProvider";
+import { ToastType } from "../toast/Toast";
+
+const FollowUserBoxContainer = styled.div`
+  display: flex;
+  justily-content: space-between;
+  align-items: stretch;
+  max-height: 60px;
+  gap: 8px;
+`;
 
 interface FollowUserBoxProps {
   profilePicture?: string;
   name?: string;
   username?: string;
   id: string;
+  isInitiallyFollowing?: boolean;
 }
 
 const FollowUserBox = ({
-                         profilePicture,
-                         name,
-                         username,
-                         id,
-                       }: FollowUserBoxProps) => {
+  profilePicture,
+  name,
+  username,
+  id,
+  isInitiallyFollowing = false,
+}: FollowUserBoxProps) => {
   const {t} = useTranslation();
   const service = useHttpRequestService()
-  const [user, setUser] = useState<User>()
+  const { data: me, isLoading } = useMe();
+  const showToast = useToast();
 
+  // useEffect(() => {
+  //   if (me) {
+  //     setIsFollowing(me.following?.some((f: Author) => f.id === id) ?? false);
+  //   }
+  // }, [me, id]);
 
-  useEffect(() => {
-    handleGetUser().then(r => {
-      setUser(r)
-      setIsFollowing(r?.following.some((f: Author) => f.id === id))
-    })
-  }, []);
-
-  const handleGetUser = async () => {
-    return await service.me()
-  }
-
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(isInitiallyFollowing);
 
   const handleFollow = async () => {
-    if (isFollowing) {
-      await service.unfollowUser(id);
-    } else {
-      await service.followUser(id);
+    try {
+      if (isFollowing) {
+        await service.unfollowUser(id);
+        setIsFollowing(false);
+      } else {
+        await service.followUser(id);
+        setIsFollowing(true);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast(ToastType.ALERT, "You already follow this user");
     }
-    setIsFollowing(!isFollowing);
   };
 
   return (
-      <div className="box-container">
+      <FollowUserBoxContainer>
         <UserDataBox
             id={id}
             name={name!}
@@ -61,7 +75,7 @@ const FollowUserBox = ({
             size={"SMALL"}
             onClick={handleFollow}
         />
-      </div>
+      </FollowUserBoxContainer>
   );
 };
 

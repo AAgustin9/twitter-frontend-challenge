@@ -9,16 +9,23 @@ interface ToastContainerProps {
 
 export const StyledToastContainer = styled.div`
   display: flex;
+  flex-wrap: nowrap;
   padding: 8px 16px;
   align-items: center;
   gap: 16px;
   position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
   border-radius: 8px;
   border: 1px solid
     ${(props: ToastContainerProps) => {
       switch (props.type) {
         case ToastType.ALERT:
           return props.theme.colors.errorContainer;
+        case ToastType.SUCCESS:
+          return props.theme.colors.successContainer;
         default:
           return props.theme.colors.errorContainer;
       }
@@ -30,10 +37,13 @@ export const StyledToastContainer = styled.div`
       switch (props.type) {
         case ToastType.ALERT:
           return props.theme.colors.errorContainer;
+        case ToastType.SUCCESS:
+          return props.theme.colors.successContainer;
         default:
           return props.theme.colors.errorContainer;
       }
     }};
+    white-space: nowrap;
     margin: 0;
     font-variant-numeric: lining-nums tabular-nums;
     /* Body-2 */
@@ -43,6 +53,7 @@ export const StyledToastContainer = styled.div`
     font-weight: 400;
     line-height: 110%; /* 13.2px */
     letter-spacing: -0.12px;
+    text-overflow: ellipsis;
   }
   transition: 0.3s ease-in-out;
   &:hover {

@@ -8,7 +8,8 @@ import icon from "../../assets/icon.jpg";
 import {StyledP} from "../common/text";
 import {StyledContainer} from "../common/Container";
 import {useHttpRequestService} from "../../service/HttpRequestService";
-import {User} from "../../service";
+import { useMe } from "../../hooks/queries/useMe";
+import PortalHelper from "../portal/PortalHelper";
 
 
 interface ProfileLogoutPromptProps {
@@ -19,16 +20,7 @@ interface ProfileLogoutPromptProps {
 const ProfileLogoutPrompt = ({margin, direction}: ProfileLogoutPromptProps) => {
     const [logoutOpen, setLogoutOpen] = useState(false);
     const service = useHttpRequestService()
-    const [user, setUser] = useState<User>()
-
-
-    useEffect(() => {
-        handleGetUser().then(r => setUser(r))
-    }, []);
-
-    const handleGetUser = async () => {
-        return await service.me()
-    }
+    const { data: user, isLoading } = useMe();
 
 
     const handleLogout = () => {
@@ -53,9 +45,9 @@ const ProfileLogoutPrompt = ({margin, direction}: ProfileLogoutPromptProps) => {
             <StyledProfileLogoutPromptContainer direction={direction}>
                 <img src={user?.profilePicture ?? icon} className="icon" alt="Icon"/>
                 {logoutOpen &&
-                    <StyledLogoutPrompt margin={margin} onClick={(event) => handleButtonClick(event)}>
-                        <LogoutPrompt show={logoutOpen}/>
-                    </StyledLogoutPrompt>
+                        <StyledLogoutPrompt margin={margin} onClick={(event) => handleButtonClick(event)}>
+                            <LogoutPrompt show={logoutOpen}/>
+                        </StyledLogoutPrompt>
                 }
             </StyledProfileLogoutPromptContainer>
             <StyledContainer padding={"4px 0"} gap={"4px"} className={'user-info'}>

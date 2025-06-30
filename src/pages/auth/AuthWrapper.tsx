@@ -20,6 +20,9 @@ const StyledSignInWrapper = styled.div`
     flex-direction: column;
     gap: 8px;
     justify-content: left;
+    width: 100%;
+    max-width: 300px;
+    align-items: center;
   }
 
   .container {

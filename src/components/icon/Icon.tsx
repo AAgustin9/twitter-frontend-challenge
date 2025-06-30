@@ -553,3 +553,21 @@ export const AlertIcon = (props: IconProps) => {
     </svg>
   );
 };
+
+export const SuccessIcon = (props: IconProps) => {
+  return (
+    <svg
+      width={props.width ?? "24"}
+      height={props.height ?? "24"}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      onClick={props.onClick}
+    >
+      <path
+        d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 16L5.99 12L7.41 10.59L10 13.17L16.59 6.58L18 8L10 16Z"
+        fill={props.color ?? "#2E7D32"}
+      />
+    </svg>
+  );
+};

@@ -14,4 +14,5 @@ export const StyledSearchBarContainer = styled.div`
   flex-direction: column;
   transition: 0.3s ease-in-out;
   box-sizing: border-box;
+  position: relative;
 `;
