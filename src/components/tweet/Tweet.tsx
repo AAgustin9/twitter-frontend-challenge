@@ -26,28 +26,41 @@ const Tweet = ({post}: TweetProps) => {
   const navigate = useNavigate();
   const { data: user, isLoading } = useMe();
 
-  const getCountByType = (type: string): number => {
-    const matches = actualPost.reactions?.filter(r => r.type === type);
-    return matches?.length ?? 0;
-  };
+  useEffect(() => {
+    const loadReactions = async () => {
+      try {
+        const reactions = await service.getReactionsByPostId(post.id);
+        setActualPost(prev => ({ ...prev, reactions }));
+      } catch (err) {
+        console.error("Failed to fetch reactions", err);
+      }
+    };
+    loadReactions();
+  }, [service, post.id]);
+
+  const getCountByType = (type: "LIKE" | "RETWEET"): number =>
+    (actualPost.reactions ?? [])
+      .filter(r => r.type === type)
+      .length;
 
   const handleReaction = async (type: string) => {
-    const reacted = actualPost.reactions.find(
-        (r) => r.type === type && r.userId === user?.id
-    );
+    const reacted = hasReactedByType(type);
     if (reacted) {
-      await service.deleteReaction(reacted.id);
+      await service.deleteReaction(actualPost.id, type);
     } else {
       await service.createReaction(actualPost.id, type);
     }
-    const newPost = await service.getPostById(post.id);
-    setActualPost(newPost);
+    const updatedReactions = await service.getReactionsByPostId(actualPost.id);
+    setActualPost(prev => ({
+      ...prev,
+      reactions: updatedReactions,
+    }));
   };
 
   const hasReactedByType = (type: string): boolean => {
     return actualPost.reactions
-      ?.some( r => r.type === type && r.userId === user?.id)
-      ?? false;
+      ? actualPost.reactions.some(r => r.type === type && r.userId === user?.id)
+      : false;
   };
 
   return (
