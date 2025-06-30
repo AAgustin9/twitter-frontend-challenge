@@ -2,7 +2,6 @@ import type { PostData, SingInData, SingUpData } from "./index";
 import axios from "axios";
 import axiosClient from "./AxiosClient";
 import { User } from "./index";
-import { S3Service } from "./S3Service";
 
 const url =
   process.env.REACT_APP_API_URL || "https://twitter-ieea.onrender.com/api";
@@ -46,8 +45,12 @@ const httpRequestService = {
       },
     });
     if (res.status === 200) {
-      return res.data;
+      return (res.data as any[]).map((post) => ({
+        ...post,
+        images: post.images.map(getImageUrl),
+      }));
     }
+    return [];
   },
   getPosts: async (query: string) => {
     const res = await axiosClient.get(`/post/${query}`);
