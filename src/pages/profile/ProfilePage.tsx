@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -14,14 +14,16 @@ import { useHttpRequestService } from "../../service/HttpRequestService";
 import { useProfile } from "../../hooks/queries/useProfile";
 import { useMe } from "../../hooks/queries/useMe";
 import { useProfileViewFallback } from "../../hooks/queries/useProfileViewFallback";
-import { User } from "../../service";
 import Loader from "../../components/loader/Loader";
+import { useToast } from "../../components/toast/ToastProvider";
+import { ToastType } from "../../components/toast/Toast";
 
 const ProfilePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const service = useHttpRequestService();
+  const showToast = useToast();
 
   const [showModal, setShowModal] = useState(false);
   const [modalValues, setModalValues] = useState({
@@ -42,10 +44,13 @@ const ProfilePage = () => {
 
   const finalProfile = profile ?? fallbackProfile;
 
-  
-  const following = useMemo(() => {
-    return finalProfile?.followers?.some((f: User) => f.id === user?.id) ?? false;
-  }, [finalProfile, user]);  
+  const [isFollowingState, setIsFollowingState] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (finalProfile && isFollowingState === null) {
+      setIsFollowingState(finalProfile.isFollowing ?? false);
+    }
+  }, [finalProfile, isFollowingState]);
   
   if (isProfileLoading) {
     return (
@@ -59,10 +64,8 @@ const ProfilePage = () => {
   const isOwner = finalProfile.id === user?.id
 
   const handleButtonType = (): { component: ButtonType; text: string } => {
-    if (isOwner)
-      return { component: ButtonType.DELETE, text: t("buttons.delete") };
-    if (following)
-      return { component: ButtonType.OUTLINED, text: t("buttons.unfollow") };
+    if (isOwner) return { component: ButtonType.DELETE, text: t("buttons.delete") };
+    if (isFollowingState) return { component: ButtonType.DELETE, text: t("buttons.unfollow") };
     return { component: ButtonType.FOLLOW, text: t("buttons.follow") };
   };
 
@@ -87,19 +90,29 @@ const ProfilePage = () => {
         buttonText: t("buttons.delete"),
       });
       setShowModal(true);
-    } else if (following) {
-      setModalValues({
-        title: `${t("modal-title.unfollow")} @${finalProfile.username}?`,
-        text: t("modal-content.unfollow"),
-        type: ButtonType.FOLLOW,
-        buttonText: t("buttons.unfollow"),
-      });
-      setShowModal(true);
     } else {
-      await service.followUser(id);
-      await refetchProfile();
+      try {
+        if (isFollowingState) {
+          await service.unfollowUser(finalProfile.id);
+          setIsFollowingState(false);
+        } else {
+          await service.followUser(finalProfile.id);
+          setIsFollowingState(true);
+        }
+        refetchProfile();
+      } catch (err) {
+        showToast(ToastType.ALERT, "You already follow this user");
+      }
     }
   };
+
+  if (isFollowingState === null) {
+    return (
+      <StyledContainer justifyContent="center" alignItems="center" height="100vh">
+        <Loader />
+      </StyledContainer>
+    );
+  }
 
   return (
     <StyledContainer
@@ -128,10 +141,11 @@ const ProfilePage = () => {
       flex={1}
       overflowY="auto"
       >
-        {finalProfile.private && !finalProfile.isFollowing
-          ? <StyledH5>Private account</StyledH5>
-          : <ProfileFeed /> 
-        }
+        {finalProfile.private && !isFollowingState ? (
+        <StyledH5>Private account</StyledH5>
+      ) : (
+        <ProfileFeed />
+      )}
       </StyledContainer>
 
       <Modal

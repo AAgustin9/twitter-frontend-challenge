@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Icon, IconType } from "../../icon/Icon";
 import { StyledReactionContainer } from "./ReactionContainer";
 
@@ -18,6 +18,11 @@ const Reaction = ({
 }: ReactionProps) => {
   const [reactionCount, setReactionCount] = useState(count);
   const [reactionReacted, setReactionReacted] = useState(reacted);
+
+  useEffect(() => {
+    setReactionCount(count);
+    setReactionReacted(reacted);
+  }, [count, reacted]);
 
   const handleReaction = async () => {
     try {

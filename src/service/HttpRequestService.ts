@@ -1,4 +1,4 @@
-import type { PostData, SingInData, SingUpData } from "./index";
+import type { PostData, SingInData, SingUpData, Reaction } from "./index";
 import axios from "axios";
 import axiosClient from "./AxiosClient";
 import { User } from "./index";
@@ -93,18 +93,27 @@ const httpRequestService = {
   },
   createReaction: async (postId: string, reaction: string) => {
     const res = await axiosClient.post(
-      `reaction/${postId}`,
+      `/reaction/${postId}`,
       { type: reaction },
     );
     if (res.status === 201) {
       return res.data;
     }
   },
-  deleteReaction: async (reactionId: string) => {
-    const res = await axiosClient.delete(`/reaction/${reactionId}`);
+  deleteReaction: async (postId: string, reaction: string) => {
+    const res = await axiosClient.delete(`/reaction/${postId}`, {
+      params: { type: reaction }
+    });
     if (res.status === 200) {
       return res.data;
     }
+  },
+  getReactionsByPostId: async (postId: string): Promise<Reaction[]> => {
+    const res = await axiosClient.get(`/reaction/${postId}`);
+    if (res.status === 200) {
+      return res.data as Reaction[];
+    }
+    return [];
   },
   followUser: async (userId: string) => {
     const res = await axiosClient.post(
