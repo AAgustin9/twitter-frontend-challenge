@@ -83,7 +83,7 @@ const NavBar = () => {
               buttonType={ButtonType.DEFAULT}
               onClick={() => navigate("/messages")}
             >
-              Messages
+              {t("header.messages")}
             </StyledButton>
           </StyledContainer>
           <TweetModal

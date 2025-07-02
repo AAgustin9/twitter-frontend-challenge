@@ -149,6 +149,9 @@ const TweetBox: React.FC<TweetBoxProps> = ({
             name="content"
             src={user?.profilePicture}
           />
+          <div style={{ alignSelf: "flex-end", marginTop: "4px", fontSize: "14px", color: "#657786" }}>
+            {formik.values.content.length}/240
+          </div>
           <StyledContainer padding={"0 0 0 10%"}>
             <ImageContainer
               editable
